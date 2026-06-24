@@ -63,17 +63,13 @@ def convert_df(df):
 csv = convert_df(df)
 st.download_button("📥 下载当前筛选数据", data=csv, file_name='bilibili_filtered.csv', mime='text/csv')
 with st.expander("📋 查看系统运行日志"):
-    log_path = Path("logs") / "scraper.log"
-    if log_path.exists():
+    if os.path.exists('scraper.log'):
         try:
-            with open(log_path, 'r', encoding='gbk') as f:
-                lines = f.readlines()
-            st.code(''.join(lines[-20:]), language='log')
-        except UnicodeDecodeError:
-            # 如果 gbk 也不行，尝试其他编码或使用错误处理
-            with open(log_path, 'r', encoding='utf-8', errors='ignore') as f:
-                lines = f.readlines()
-            st.code(''.join(lines[-20:]), language='log')
+            with open('scraper.log', 'r', encoding='utf-8', errors='ignore') as f:
+                logs = f.readlines()
+                st.code(''.join(logs[-20:]), language='log')
+        except Exception as e:
+            st.error(f"读取日志失败: {e}")
     else:
         st.info("暂无日志记录")
 st.sidebar.caption(f"📦 数据来源: SQLite | 共 {len(load_data_from_db())} 条记录")
