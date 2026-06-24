@@ -12,6 +12,14 @@ def load_data_from_db():
 
 df = load_data_from_db()
 
+if not df.empty:
+    latest_date = df['date'].max()
+    st.caption(f"🔄 数据最后更新：{latest_date} ｜ 共 {len(df)} 条记录")
+
+if not df.empty:
+    # 计算互动率：(点赞+投币) / 播放量 * 100，保留2位小数
+    df['互动率(%)'] = ((df['likes'] + df['coins']) / df['views'] * 100).round(2)
+
 if df.empty:
     st.warning("⏳ 数据库暂无数据，请等待定时抓取任务执行。")
     st.stop()
@@ -27,7 +35,7 @@ selected_author = st.sidebar.selectbox("筛选UP主", author_list)
 if selected_author != '全部':
     df = df[df['author'] == selected_author]
 
-st.dataframe(df, use_container_width=True)
+st.dataframe(df[['date', 'title', 'views', 'likes', 'coins', '互动率(%)', 'author']])
 
 st.subheader("📊 播放量 TOP 10")
 top10 = df.sort_values('views', ascending=False).head(10)
