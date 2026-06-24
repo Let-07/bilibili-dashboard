@@ -2,6 +2,10 @@ import requests
 import pandas as pd
 import datetime
 import db_utils
+import logging
+
+logging.basicConfig(filename='scraper.log', level=logging.INFO,
+                    format='%(asctime)s - %(levelname)s - %(message)s')
 
 
 def fetch_and_save():
@@ -26,9 +30,9 @@ def fetch_and_save():
         db_utils.init_db()
         db_utils.save_data(df_new)
         total = len(db_utils.load_all_data())
-        print(f"✅ {today} 数据入库成功，当前共 {total} 条历史记录")
+        logging.info(f"✅ {today} 数据入库成功，当前共 {total} 条历史记录")
     except Exception as e:
-        print(f"❌ 抓取失败: {e}")
+        logging.error(f"❌ 抓取失败: {e}")
         db_utils.init_db()
         if len(db_utils.load_all_data()) == 0:
             sample = pd.DataFrame({
